@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map> 
 
-//-I ${MSMPI_INC} -L ${MSMPI_LIB64} -lmsmpi
+
 using namespace std;
 
 #pragma pack(push, 1)
@@ -377,46 +377,48 @@ class HuffmanTree
 			}
 			return r;
 		}
-		void DecompressFile(fstream& file2 , fstream& file3, int Width = 0, int SKIP = 0)
-		{
-			unsigned char x;
-			Node<T>* r = root;
-			char EOC;
-			int i = 7;
-			long long int k, POSCounter = 0;
-			file2 >> k;
-			file2 >> EOC;
-			while(true)
-			{
-				x = file2.get();
-				while(true)
-				{
-					if(k <= 0) return;
-					if(!r->left && !r->right)
-					{
-						POSCounter++;
-						file3 << r->data.getChar();
-						k--;
-						r = root;
-						if(POSCounter == Width*3)
-						{
-							POSCounter = 0;
-							EOC = r->data.getChar();
-							for(int z = 0 ; z < SKIP ; z++) file3.write((char*)&EOC, 1);
-						}
-						continue;
-					}
-					if(i == -1)
-					{
-						i = 7;
-						break;
-					}
-					if((x & (1<<i))>>i) r = r->right;
-					else r = r->left;
-					i--;
-				}
-			}
-		}
+		void DecompressFile(fstream& file2, fstream& file3, int Width = 0, int SKIP = 0) {
+    unsigned char x;
+    Node<T>* r = root;
+    char EOC;
+    int i = 7;
+    long long int k, POSCounter = 0;
+
+    file2 >> k;
+    file2 >> EOC;
+
+    while (true) {
+        x = file2.get();
+        while (true) {
+            if (k <= 0) return;
+
+            if (!r->left && !r->right) {
+                POSCounter++;
+                file3 << r->data.getChar();
+                k--;
+                r = root;
+
+                if (POSCounter == Width * 3) {
+                    POSCounter = 0;
+                    EOC = r->data.getChar();
+                    for (int z = 0; z < SKIP; z++) {
+                        file3.write((char*)&EOC, 1);
+                    }
+                }
+                continue;
+            }
+
+            if (i == -1) {
+                i = 7;
+                break;
+            }
+
+            r = ((x & (1 << i)) >> i) ? r->right : r->left;
+            i--;
+        }
+    }
+}
+
 };
 void ZipFile(int rank, int size)//Main Zip Function
 {
@@ -626,7 +628,7 @@ int main(int argc, char** argv)
         }
 	}	
     if(!rank)
-	    cout << "\nMade By Mohammad Yehya Hayati (K213309), Mahad Munir (K213388), Daniyal Naqvi (K213433)";
+	    cout << "\nMade By Mohammad Yehya Hayati (K21-3309), Mahad Munir (K21-3388), Daniyal Naqvi (K21-3433)";
 
     MPI_Finalize();
 }
